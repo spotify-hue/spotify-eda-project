@@ -1,0 +1,173 @@
+# ===============================================================
+# Spotify_EDA_Analysis.py
+# Exploratory Data Analysis (EDA) on Spotify Top 200 Dataset
+# ===============================================================
+
+# --- Import Required Libraries ---
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# --- Load Dataset ---
+df = pd.read_csv("Spotify_Dataset_Cleaned-2(in) (1).csv")
+
+# Display basic info
+print("Dataset Shape:", df.shape)
+print("Columns:", df.columns.tolist())
+
+# --- Overview ---
+"""
+This exploratory analysis examines the main audio features of Spotify’s Top 200 songs.
+It explores distributions, correlations, and relationships between features and popularity (Rank),
+as well as differences by nationality.
+"""
+
+# ===============================================================
+# 1. Distribution of Audio Features
+# ===============================================================
+features = ['danceability', 'energy', 'loudness', 'speechiness', 
+            'acousticness', 'instrumentalness', 'valence']
+
+for feature in features:
+    plt.figure(figsize=(8,5))
+    sns.histplot(df[feature], bins=20, kde=True, color="skyblue")
+    plt.title(f"Distribution of {feature.capitalize()}")
+    plt.xlabel(feature.capitalize())
+    plt.ylabel("Number of Songs")
+    plt.show()
+
+"""
+INTERPRETATIONS:
+- Danceability: Most songs fall between 0.6–0.8 → moderately to highly danceable.
+- Energy: Majority between 0.6–0.8 → energetic and lively.
+- Loudness: Most near 0 dB → loud and well-mastered (supports the 'loudness war').
+- Speechiness: Low for most songs (< 0.1) → minimal spoken content.
+- Acousticness: Right-skewed (0.0–0.2) → most hits are electronic or produced.
+- Instrumentalness: Near 0.0 for almost all songs → vocals dominate popular music.
+- Valence: Mostly 0.2–0.8 → moderately emotional, not too happy or sad.
+"""
+
+# ===============================================================
+# 2. Correlation Between Audio Features
+# ===============================================================
+plt.figure(figsize=(10,7))
+sns.heatmap(df[features].corr(), annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Between Audio Features")
+plt.show()
+
+"""
+INTERPRETATION:
+- Energy & Loudness (0.57): Louder songs are more energetic.
+- Energy & Acousticness (-0.57): Energetic songs are less acoustic.
+- Danceability & Valence (0.33): Happier songs are often more danceable.
+- Loudness & Acousticness (-0.38): Acoustic tracks tend to be quieter.
+- Valence & Energy (0.36): Positive emotions align with higher energy.
+- Danceability & Speechiness (0.24): Spoken elements often accompany rhythm.
+"""
+
+# ===============================================================
+# 3. Relationship Between Features and Rank
+# ===============================================================
+"""
+Lower rank values = higher popularity.
+We'll visualize how each feature relates to chart position.
+"""
+plt.figure(figsize=(10,6))
+corr_rank = df[features + ['rank']].corr()['rank'].sort_values()
+print("Feature correlations with Rank:\n", corr_rank)
+
+for feature in features:
+    plt.figure(figsize=(8,5))
+    sns.scatterplot(x=df[feature], y=df['rank'], alpha=0.4)
+    plt.title(f"{feature.capitalize()} vs Rank (Lower Rank = More Popular)")
+    plt.xlabel(feature.capitalize())
+    plt.ylabel("Rank")
+    plt.show()
+
+"""
+INTERPRETATION:
+- Rank correlations are weak (|r| < 0.1) → no single feature determines popularity.
+- Slight patterns: danceable, energetic, or loud songs tend to rank slightly higher.
+- Acoustic and instrumental songs are less common in top positions.
+- Emotional tone (valence) doesn’t strongly influence popularity.
+"""
+
+# ===============================================================
+# 4. Distribution of Song Ranks (Popularity)
+# ===============================================================
+plt.figure(figsize=(8,5))
+sns.histplot(df['rank'], bins=50, kde=True, color="orchid")
+plt.title("Distribution of Song Ranks")
+plt.xlabel("Rank (1 = Most Popular)")
+plt.ylabel("Number of Songs")
+plt.show()
+
+"""
+INTERPRETATION:
+- Right-skewed distribution → most songs rank near 200.
+- Only a small number of songs achieve top popularity (ranks near 1).
+- Popularity is concentrated among a few hits (winner-takes-all effect).
+"""
+
+# ===============================================================
+# 5. Nationality Analysis
+# ===============================================================
+# Group by nationality to compute average rank and total points
+avg_rank = df.groupby('nationality')['rank'].mean().sort_values()
+total_points = df.groupby('nationality')['points(total)'].sum().sort_values(ascending=False)
+
+# --- Average Rank ---
+plt.figure(figsize=(10,5))
+sns.barplot(x=avg_rank.index, y=avg_rank.values, palette="coolwarm")
+plt.title("Average Rank by Nationality (Lower = Better)")
+plt.xlabel("Nationality")
+plt.ylabel("Average Rank")
+plt.xticks(rotation=45)
+plt.show()
+
+# --- Total Points ---
+plt.figure(figsize=(10,5))
+sns.barplot(x=total_points.index, y=total_points.values, palette="viridis")
+plt.title("Total Spotify Points by Nationality")
+plt.xlabel("Nationality")
+plt.ylabel("Total Points")
+plt.xticks(rotation=45)
+plt.show()
+
+"""
+INTERPRETATION:
+- France and South Korea have the best average ranks → high per-song efficiency.
+- U.S. and U.K. dominate total points → massive global output and reach.
+- Puerto Rico and Germany have higher average ranks (lower popularity).
+- France and Italy produce fewer but consistently successful songs.
+
+KEY INSIGHTS:
+1. Quantity vs. Quality:
+   - U.S. & U.K.: Quantity (many songs, large reach).
+   - France & South Korea: Quality (fewer songs, strong average performance).
+
+2. Global Trends:
+   - K-pop and French pop have strong global influence.
+   - Latin music (Puerto Rico, Brazil) growing but less consistent.
+
+3. Strategic Implications:
+   - Smaller markets succeed through high-quality releases.
+   - Larger markets dominate through scale and exposure.
+"""
+
+# ===============================================================
+# 6. Summary
+# ===============================================================
+"""
+GENERAL INSIGHTS:
+- Popular songs share traits: energetic, loud, moderately danceable.
+- Correlations with rank are weak → audio traits alone don’t ensure success.
+- Cultural and marketing factors likely play a bigger role.
+- National differences show that both quality and quantity drive chart performance.
+
+Overall, this EDA highlights that while musical energy, rhythm, and production style
+shape listener appeal, true chart success results from a mix of artistry,
+market reach, and audience connection.
+"""
+
+
