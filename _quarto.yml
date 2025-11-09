@@ -1,1 +1,21 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Spotify Top 200 EDA"
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "EDA Analysis"
+        href: EDA_Interpretation_Spotify.qmd
+
+format:
+  html:
+    theme: flatly
+    toc: true
+    code-fold: false
+    code-copy: true
+    smooth-scroll: true
 
