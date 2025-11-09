@@ -196,18 +196,7 @@ The **United States** dominates total points, showing global reach and volume of
 
 Popular songs tend to be **danceable, energetic, and loud**, while purely acoustic or instrumental songs are rare. However, individual features explain little about overall popularity. Nationality reveals production and market differences.
 
-**Limitations:**
-- Correlation ≠ causation.
-- Missing external variables (marketing, artist fame, timing).
-- No temporal analysis (trends may change yearly).
-- Rank is only a relative proxy for success.
 
-# Recommendations
-
-1. Perform year-by-year EDA to capture evolving trends.
-2. Include artist-level features for predictive modeling.
-3. Examine interactions between features (e.g., Energy × Danceability).
-4. Validate results with Spotify API popularity or stream count metrics.
 
 ---
 
