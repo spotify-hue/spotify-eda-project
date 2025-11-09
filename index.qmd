@@ -1,0 +1,29 @@
+---
+title: "Spotify Popularity Analysis (2017–2023)"
+format: html
+---
+
+# Welcome
+
+This site presents our **Exploratory Data Analysis (EDA)** of the **Spotify Top 200 Global Tracks (2017–2023)**.  
+The project explores how musical features (danceability, energy, loudness, etc.) relate to song popularity.
+
+## Project Overview
+
+- **Goal:** Understand whether measurable audio features influence a song’s success.  
+- **Dataset:** Top 200 Spotify global charts (2017–2023) with audio attributes from Kaggle.  
+- **Methodology:**  
+  - Data cleaning and preprocessing  
+  - Exploratory visualizations using Plotly Express  
+  - Correlation analysis between features and popularity metrics  
+  - Nationality-based performance comparisons  
+- **Tools:** Python 3, Pandas, Plotly Express, SciPy, Quarto.
+
+## Results Summary
+
+Popular tracks are generally **danceable**, **energetic**, and **loud**.  
+However, no single feature strongly predicts success — indicating that **marketing and cultural context** likely play bigger roles.
+
+## View Full Analysis
+
+👉 [Open the EDA report »](EDA_Interpretation_Spotify.qmd)
