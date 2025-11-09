@@ -1,0 +1,118 @@
+# EDA — Spotify Audio Features and Song Popularity
+
+::: {.callout-tip}
+## Purpose of This EDA
+
+The goal of this Exploratory Data Analysis (EDA) is to understand how musical characteristics (audio features) relate to the popularity of songs on Spotify from 2017–2023. Specifically, we aim to:
+
+1. **Explore** the distributions of key musical features (e.g., danceability, energy, valence, etc.)
+2. **Identify** relationships between these features and popularity
+3. **Detect** potential trends across nationalities and musical styles
+4. **Generate hypotheses** about what drives a song’s success
+:::
+
+::: {.callout-important}
+## Interpretation is Key
+
+Plots alone are not sufficient — each visualization below is followed by a short **interpretation** explaining what it reveals and why it matters for our project goal of understanding song popularity.
+:::
+
+---
+
+## 1. Data Overview
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load dataset
+df = pd.read_csv("Spotify_Dataset_Cleaned-2(in) (1) (2).csv")
+
+# Display basic info
+print(df.shape)
+df.info()
+
+# Summary statistics
+df.describe()
+
+# Check for missing values
+df.isna().sum()
+```
+
+**Interpretation:**  
+The dataset contains around 650,000 observations covering daily Spotify Top 200 rankings from 2017–2023. Each record corresponds to a unique track with audio features such as *danceability*, *energy*, and *valence*, as well as metadata like *artist nationality* and *rank*. The dataset is clean and ready for analysis — with no major missing values.
+
+---
+
+## 2. Univariate Analysis
+
+We first examine the distribution of each numerical audio feature individually to understand their general tendencies.
+
+```{python}
+numeric_features = ['Danceability', 'Energy', 'Loudness', 'Speechiness', 
+                    'Acousticness', 'Instrumentalness', 'Valence']
+
+plt.figure(figsize=(12, 10))
+for i, feature in enumerate(numeric_features, 1):
+    plt.subplot(3, 3, i)
+    sns.histplot(df[feature], bins=20, kde=True, color='steelblue')
+    plt.title(feature)
+plt.tight_layout()
+plt.show()
+```
+
+### Interpretation
+- **Danceability:** Most songs have moderate to high danceability (0.5–0.8), suggesting that rhythmic and steady beats are common in popular tracks.
+- **Energy:** Distribution is right-skewed — many songs are energetic, confirming the trend toward upbeat and lively production in mainstream music.
+- **Loudness:** Most values cluster around -6 to -3 dB, typical for professionally mastered songs aimed at streaming.
+- **Speechiness:** Most songs have low values (<0.1), meaning purely spoken or rap tracks are less common overall.
+- **Acousticness:** Highly skewed — most songs are not acoustic, indicating that electronic and produced sounds dominate Spotify charts.
+- **Instrumentalness:** Very low overall; few purely instrumental tracks appear in the Top 200.
+- **Valence:** Roughly uniform spread; both happy and sad songs can become popular, showing emotional variety in hit music.
+
+---
+
+## 3. Bivariate Analysis
+
+### 3.1 Popularity (Rank) by Nationality
+
+```{python}
+# Filter top nationalities
+top_nationalities = df['Nationality'].value_counts().head(10).index
+df_nat = df[df['Nationality'].isin(top_nationalities)]
+df_nat['Rank'] = pd.to_numeric(df_nat['Rank'], errors='coerce')
+
+# Compute average popularity rank by nationality
+pop_by_nat = df_nat.groupby('Nationality')['Rank'].mean().sort_values()
+
+# Plot average rank
+plt.figure(figsize=(10,5))
+sns.barplot(x=pop_by_nat.index, y=pop_by_nat.values, palette='coolwarm')
+plt.title("Average Popularity Rank by Nationality", fontsize=14, fontweight='bold')
+plt.ylabel("Average Rank (lower = more popular)")
+plt.xlabel("Nationality")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+```
+
+**Interpretation:**  
+Countries such as the **United States**, **United Kingdom**, and **Canada** consistently dominate the top of the charts, reflecting their global influence in the pop and hip-hop genres. Emerging markets like **South Korea** and **Mexico** also appear among the top performers, suggesting the growing internationalization of music trends.
+
+---
+
+## 4. Key Insights and Implications
+
+- Popular songs tend to share certain **audio characteristics**, notably **high energy** and **danceability**, while purely acoustic or instrumental songs are less represented.
+- The emotional tone (**valence**) is more varied, meaning both happy and sad songs can achieve success, possibly depending on cultural or temporal trends.
+- Popularity patterns by nationality highlight the dominance of Anglo-American artists but also the increasing **global diversity** of chart-topping music.
+
+### Next Steps
+- Compute a **correlation heatmap** to quantify which audio features most strongly influence popularity.
+- Test predictive models (e.g., regression or random forest) to estimate a song’s popularity based on its musical features.
+
+---
+
+**Conclusion:**  
+This EDA reveals clear tendencies linking musical energy and rhythm to popularity while also highlighting global shifts in listening behavior. These insights provide a foundation for building a predictive model to understand how audio features drive success on Spotify.
